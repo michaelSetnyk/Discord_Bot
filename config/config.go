@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+    "os"
 )
 
 var (
@@ -22,14 +23,12 @@ type configStruct struct {
 
 func ReadConfig() error {
 	fmt.Println("Reading config file...")
-	file, err := ioutil.ReadFile("%USERPROFILE%/.dough_bot/config.json")
+    file, err := ioutil.ReadFile(os.Getenv("LOCALAPPDATA")+"/.dough_bot/config.json")
 
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
 	}
-
-	fmt.Println(string(file))
 
 	err = json.Unmarshal(file, &config)
 

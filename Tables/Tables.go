@@ -11,7 +11,7 @@ var QuoteTableIn = &dynamodb.CreateTableInput{
     AttributeDefinitions: []*dynamodb.AttributeDefinition{
       {
         AttributeName: aws.String("Quote_ID"),
-        AttributeType: aws.String("N"),
+        AttributeType: aws.String("S"),
       },
       {
       AttributeName: aws.String("Said_By"),

@@ -82,42 +82,40 @@ func messageHandler(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(m.Content, config.BotPrefix) {
 		if m.Author.ID == BotID {
 			return
-		}
-        
-		//create new aws tables
-		if m.Content == config.BotPrefix+"init" {
-				currentChannel,err := goBot.Channel(m.ChannelID)
-
-				if err != nil{
-					fmt.Println(err)
-					_, _ = s.ChannelMessageSend(m.ChannelID, "error initalizing")
-				}else{                    
-					message:= CreateTables(currentChannel.GuildID)
-					_, _ = s.ChannelMessageSend(m.ChannelID, message)
-                    fmt.Println(message)
-				}
-		}
-        if m.Content == config.BotPrefix+"kill" {
+		} else if m.Content == config.BotPrefix+"init" {
+            //create new aws tables
+            currentChannel,err := goBot.Channel(m.ChannelID)
+            if err != nil{
+                fmt.Println(err)
+                _, _ = s.ChannelMessageSend(m.ChannelID, "error initalizing")
+            }else{                    
+                message:= CreateTables(currentChannel.GuildID)
+                _, _ = s.ChannelMessageSend(m.ChannelID, message)
+                fmt.Println(message)
+            }
+		} else if m.Content == config.BotPrefix+"kill" {
 			_, _ = s.ChannelMessageSend(m.ChannelID, "killed")
 			kill()
-		}
-        
-		if  strings.HasPrefix(m.Content, config.BotPrefix+"aq") {
-            //parse quote
+		} else if  strings.HasPrefix(m.Content, config.BotPrefix+"aq") {
+            //add quote
             currentChannel,err := goBot.Channel(m.ChannelID)
-				if err != nil{
-					fmt.Println(err)
-					_, _ = s.ChannelMessageSend(m.ChannelID, "error adding quote")
-				}
-            
-    
+            if err != nil{
+				fmt.Println(err)
+				_, _ = s.ChannelMessageSend(m.ChannelID, "error adding quote")
+			}
             output:= handleQuotes.ParseQuote(m.Message,currentChannel.GuildID)
             fmt.Println(output)   
-			_, _ = s.ChannelMessageSend(m.ChannelID, currentChannel.GuildID)
-            _, _ = s.ChannelMessageSend(m.ChannelID, "quote added")
+			_, _ = s.ChannelMessageSend(m.ChannelID, output)
+		}  else if strings.HasPrefix(m.Content, config.BotPrefix+"quote"){
+               currentChannel,err := goBot.Channel(m.ChannelID)
+               if err != nil{
+                   fmt.Println(err)
+                   _, _ = s.ChannelMessageSend(m.ChannelID, "error adding quote")
+                }           
+            quote:= handleQuotes.GetQuote(m.Content,currentChannel.GuildID) 
+            _, _ = s.ChannelMessageSend(m.ChannelID, quote)
 
-		}
-
+        }
 	}
 }
 
@@ -156,8 +154,6 @@ fmt.Println("create table")
         }
     }
 	}
-
-
 	return "table(s) already exist"
 }
 
